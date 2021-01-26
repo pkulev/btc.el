@@ -1,0 +1,12 @@
+#+TITLE: btc.el - Get BTC value inside Emacs.
+
+* Installation
+
+** Via =use-package=
+   #+begin_src elisp
+     (use-package btc
+       :ensure nil
+       :quelpa
+       (btc :repo "pkulev/btc.el"
+            :fetcher github :upgrade t))
+   #+end_src
