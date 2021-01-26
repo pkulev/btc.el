@@ -34,6 +34,7 @@
 
 ;;; Code:
 
+(require 'json)
 (require 'request)
 
 (defgroup btc nil
@@ -71,10 +72,10 @@
 
 (defun btc-get-rate-by-code (currency-code)
   "Return BTC value by CURRENCY-CODE."
-  (let* ((url (get-url currency-code))
+  (let* ((url (btc-get-url currency-code))
          (response-obj (request url :parser 'btc--json-parser :sync t))
          (data (request-response-data response-obj)))
-    (json-get-rate data currency-code)))
+    (btc-json-get-rate data currency-code)))
 
 (defun btc-get-rate ()
   "Return BTC value using `btc-currency-code'."
