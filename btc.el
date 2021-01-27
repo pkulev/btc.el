@@ -48,6 +48,12 @@
   :group 'btc
   :type 'string)
 
+(defcustom btc-format-string
+  "%0.2f"
+  "Specifier for `format' function to format rate value before displaying in modeline."
+  :group 'btc
+  :type 'string)
+
 (defcustom btc-currency-code
   "usd"
   "Currency code to convert value to."
@@ -68,9 +74,9 @@
 
 (defun btc-format-rate (value)
   "Format rate VALUE for the mode-line."
-  (concat " " btc-currency-sign value))
+  (concat " " btc-currency-sign (format btc-format-string value)))
 
-(defvar btc-mode-line (btc-format-rate "0.000")
+(defvar btc-mode-line (btc-format-rate 0.000)
   "Rate to show in the mode-line.")
 
 (defvar btc-timer nil
@@ -109,7 +115,7 @@
 
 (defun btc-update-mode-line ()
   "Update rate in the mode line."
-  (btc-update-mode-line% (number-to-string (btc-get-rate))))
+  (btc-update-mode-line% (btc-get-rate)))
 
 (defun btc-start-timer ()
   "Start timer."
