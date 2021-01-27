@@ -1,5 +1,18 @@
 #+TITLE: btc.el - Get BTC value inside Emacs.
 
+You can use =btc-mode= minor mode to show BTC rate in the mode-line or use this library in
+elisp code to get rates for something else.
+
+- Get default rate (see [[*Customization][Customization]])
+  #+begin_src elisp
+    (btc-get-rate)  ;; => 31015.6217
+  #+end_src
+
+- Get rate by code
+  #+begin_src elisp
+    (btc-get-rate-by-code "usd")  ;; => 31015.6217
+  #+end_src
+
 * Installation
 
 ** Via =use-package=
@@ -8,5 +21,41 @@
        :ensure nil
        :quelpa
        (btc :repo "pkulev/btc.el"
-            :fetcher github :upgrade t))
+            :fetcher github :upgrade t)
+       ;; NOTE: Don't do this if you wan't just use the library
+       ;;       Minor mode is for showing rate in the mode-line.
+       :config
+       (btc-mode))
    #+end_src
+
+* Customization
+  You have several customize variable to play with.
+  =use-packages='s =:custom= section is good for setting theese bad boys:
+  #+begin_src elisp
+    (use-package btc
+      ;; other things you already know
+      :custom
+      (btc-format-string "%0.3f" "I need more precise result!")
+      (btc-update-interval 2 "Every 2 seconds please, I have lots of CPU"))
+  #+end_src
+
+  - =btc-url= :: /url for data source/
+
+    Actually not useful, because getting rate value is tightly coupled with default source,
+    but who knows, maybe I'll abstract this eventually.
+
+  - =btc-format-string= :: /format string for rate value/
+
+    This string will be passed to =format= function each time rate updates.
+
+  - =btc-currency-code= :: /currency code to convert BTC to/
+
+    Tightly connected to couindesk API and JSON data it returns.
+
+  - =btc-currency-sign= :: /currency sign to show with rate/
+
+    For now you can't customize it's place. Definitely need to refactor this code.
+
+  - =btc-update-interval= :: /BTC rate update interval/
+
+    It's one minute by default. Set in seconds.
