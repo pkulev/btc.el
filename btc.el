@@ -54,6 +54,28 @@
   :group 'btc
   :type 'string)
 
+(defcustom btc-currency-sign
+  "$"
+  "Sign to show with BTC rate."
+  :group 'btc
+  :type 'string)
+
+(defcustom btc-update-interval
+  60
+  "Update interval in seconds."
+  :group 'btc
+  :type 'integer)
+
+(defun btc-format-rate (value)
+  "Format rate VALUE for the mode-line."
+  (concat " " btc-currency-sign value))
+
+(defvar btc-mode-line (btc-format-rate "0.000")
+  "Rate to show in the mode-line.")
+
+(defvar btc-timer nil
+  "BTC update timer object.")
+
 (defun btc-get-url (currency-code)
   "Return URL for given CURRENCY-CODE."
   (format btc-url currency-code))
@@ -80,6 +102,40 @@
 (defun btc-get-rate ()
   "Return BTC value using `btc-currency-code'."
   (btc-get-rate-by-code btc-currency-code))
+
+(defun btc-update-mode-line% (value)
+  "Update rate in the mode line with rate VALUE."
+  (setq btc-mode-line (btc-format-rate value)))
+
+(defun btc-update-mode-line ()
+  "Update rate in the mode line."
+  (btc-update-mode-line% (number-to-string (btc-get-rate))))
+
+(defun btc-start-timer ()
+  "Start timer."
+  (unless btc-timer
+    (setq btc-timer
+          (run-with-timer 0
+                          btc-update-interval
+                          #'btc-update-mode-line))))
+
+(defun btc-stop-timer ()
+  "Stop timer."
+  (when btc-timer
+    (cancel-timer btc-timer)
+    (setq btc-timer nil)
+    (when (boundp 'mode-line-modes)
+      (delete '(t btc-mode-line) mode-line-modes))))
+
+(define-minor-mode btc-mode
+  "Show BTC rate in the mode-line."
+  :init-value nil
+  :global t
+  :lighter btc-mode-line
+  (if btc-mode
+      (btc-start-timer)
+    (btc-stop-timer)))
+
 
 (provide 'btc)
 
